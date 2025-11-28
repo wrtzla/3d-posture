@@ -1,0 +1,7 @@
+{
+  "name": "ZenParticles - AI Hand-Controlled 3D System",
+  "description": "A real-time interactive 3D particle system controlled by hand gestures via webcam. Use Gemini AI to generate shape topologies and control the universe with your hands.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
