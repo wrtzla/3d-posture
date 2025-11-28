@@ -1,6 +1,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ShapeType } from "../types";
 
+// Helper to safely get API key without crashing if process is undefined
+const getApiKey = (): string | undefined => {
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+  } catch (e) {
+    // process variable might not exist in browser environment
+  }
+  return undefined;
+};
+
 // Fallback math-based shapes if API is slow or unavailable
 export const generateMathShape = (type: ShapeType, count: number): number[] => {
   const points: number[] = [];
@@ -70,7 +82,9 @@ export const generateMathShape = (type: ShapeType, count: number): number[] => {
 };
 
 export const getShapePoints = async (shape: ShapeType, count: number = 2000): Promise<number[]> => {
-  if (!process.env.API_KEY) {
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
     console.warn("No API Key found, using fallback math shapes.");
     return generateMathShape(shape, count);
   }
@@ -81,7 +95,7 @@ export const getShapePoints = async (shape: ShapeType, count: number = 2000): Pr
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey: apiKey });
     
     const prompt = `
       Generate a flat JSON array of numbers representing 3D coordinates [x, y, z, x, y, z...] for a point cloud representation of a "${shape}".
